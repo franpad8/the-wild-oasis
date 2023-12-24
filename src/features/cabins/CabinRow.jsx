@@ -1,4 +1,10 @@
 import styled from 'styled-components'
+import Button from '../../ui/Button'
+import { useState } from 'react'
+import CreateCabinForm from './CreateCabinForm'
+import useDeleteCabin from './useDeleteCabin'
+import { HiPencil, HiSquare2Stack, HiTrash } from 'react-icons/hi2'
+import useCreateUpdateCabin from './useCreateUpdateCabin'
 
 const TableRow = styled.div`
   display: grid;
@@ -38,3 +44,44 @@ const Discount = styled.div`
   font-weight: 500;
   color: var(--color-green-700);
 `
+
+const Actions = styled.div`
+  display: flex;
+  gap: 1rem;
+`
+
+const CabinRow = ({ cabin }) => {
+  const [showEditForm, setShowEditForm] = useState(false)
+  const { id, name, maxCapacity, regularPrice, discount, image } = cabin
+
+  const { isDeleting, deleteCabin } = useDeleteCabin()
+  const { isProcessing: isCopying, createUpdateCabin: createCabin } = useCreateUpdateCabin({ isEditSession: false })
+
+  const isProcessing = isCopying || isDeleting
+
+  function handleCopyCabin () {
+    const copy = { ...cabin, name: `Copy of ${cabin.name}` }
+    delete copy.id
+    createCabin(copy)
+  }
+
+  return (
+    <>
+      <TableRow>
+        <Img src={image} />
+        <Cabin>{name}</Cabin>
+        <Cabin>{maxCapacity}</Cabin>
+        <Price>{regularPrice}</Price>
+        <Discount>{discount}</Discount>
+        <Actions>
+          <Button onClick={handleCopyCabin} disabled={isProcessing}><HiSquare2Stack /></Button>
+          <Button onClick={() => setShowEditForm(!showEditForm)} disabled={isProcessing}><HiPencil /></Button>
+          <Button onClick={() => deleteCabin(id)} disabled={isProcessing}><HiTrash /></Button>
+        </Actions>
+      </TableRow>
+      {showEditForm ? <CreateCabinForm cabinToEdit={cabin} /> : null}
+    </>
+  )
+}
+
+export default CabinRow
