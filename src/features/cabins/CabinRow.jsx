@@ -1,22 +1,10 @@
 import styled from 'styled-components'
-import Button from '../../ui/Button'
-import { useState } from 'react'
 import CreateCabinForm from './CreateCabinForm'
 import useDeleteCabin from './useDeleteCabin'
-import { HiPencil, HiSquare2Stack, HiTrash } from 'react-icons/hi2'
 import useCreateUpdateCabin from './useCreateUpdateCabin'
-
-const TableRow = styled.div`
-  display: grid;
-  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
-  column-gap: 2.4rem;
-  align-items: center;
-  padding: 1.4rem 2.4rem;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-`
+import Modal from '../../ui/Modal'
+import ConfirmDelete from '../../ui/ConfirmDelete'
+import Menus from '../../ui/Menus'
 
 const Img = styled.img`
   display: block;
@@ -51,7 +39,6 @@ const Actions = styled.div`
 `
 
 const CabinRow = ({ cabin }) => {
-  const [showEditForm, setShowEditForm] = useState(false)
   const { id, name, maxCapacity, regularPrice, discount, image } = cabin
 
   const { isDeleting, deleteCabin } = useDeleteCabin()
@@ -67,19 +54,35 @@ const CabinRow = ({ cabin }) => {
 
   return (
     <>
-      <TableRow>
-        <Img src={image} />
-        <Cabin>{name}</Cabin>
-        <Cabin>{maxCapacity}</Cabin>
-        <Price>{regularPrice}</Price>
-        <Discount>{discount}</Discount>
-        <Actions>
-          <Button onClick={handleCopyCabin} disabled={isProcessing}><HiSquare2Stack /></Button>
-          <Button onClick={() => setShowEditForm(!showEditForm)} disabled={isProcessing}><HiPencil /></Button>
-          <Button onClick={() => deleteCabin(id)} disabled={isProcessing}><HiTrash /></Button>
-        </Actions>
-      </TableRow>
-      {showEditForm ? <CreateCabinForm cabinToEdit={cabin} /> : null}
+      <Img src={image} />
+      <Cabin>{name}</Cabin>
+      <Cabin>{maxCapacity}</Cabin>
+      <Price>{regularPrice}</Price>
+      <Discount>{discount}</Discount>
+      <Actions>
+        <Modal>
+          <Menus.Menu>
+            <Menus.Toggle id={cabin.id} />
+
+            <Menus.List id={cabin.id}>
+              <Menus.Button onClick={handleCopyCabin}>Duplicate</Menus.Button>
+              <Modal.Open opens='cabin-form'>
+                <Menus.Button>Edit</Menus.Button>
+              </Modal.Open>
+              <Modal.Open opens='confirm-cabin-deletion'>
+                <Menus.Button>Remove</Menus.Button>
+              </Modal.Open>
+            </Menus.List>
+
+            <Modal.Window windowName='cabin-form'>
+              <CreateCabinForm cabinToEdit={cabin} />
+            </Modal.Window>
+            <Modal.Window windowName='confirm-cabin-deletion'>
+              <ConfirmDelete resourceName='cabin' disabled={isProcessing} onConfirm={() => deleteCabin(id)} />
+            </Modal.Window>
+          </Menus.Menu>
+        </Modal>
+      </Actions>
     </>
   )
 }

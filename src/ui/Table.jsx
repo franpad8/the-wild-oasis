@@ -1,3 +1,4 @@
+import { createContext, useContext } from 'react'
 import styled from 'styled-components'
 
 const StyledTable = styled.div`
@@ -40,7 +41,7 @@ const StyledBody = styled.section`
   margin: 0.4rem 0;
 `
 
-const Footer = styled.footer`
+const StyledFooter = styled.footer`
   background-color: var(--color-grey-50);
   display: flex;
   justify-content: center;
@@ -58,3 +59,60 @@ const Empty = styled.p`
   text-align: center;
   margin: 2.4rem;
 `
+
+const TableContext = createContext()
+
+const Table = ({ children, columns }) => {
+  return (
+    <TableContext.Provider value={{ columns }}>
+      <StyledTable role='table'>
+        {children}
+      </StyledTable>
+    </TableContext.Provider>
+  )
+}
+
+const Header = ({ children }) => {
+  const { columns } = useContext(TableContext)
+
+  return (
+    <StyledHeader columns={columns}>
+      {children}
+    </StyledHeader>
+  )
+}
+
+const Body = ({ data, render }) => {
+  if (!data.length) return <Empty>No data to show at the moment</Empty>
+
+  return (
+    <StyledBody>
+      {data.map(render)}
+    </StyledBody>
+  )
+}
+
+const Row = ({ children }) => {
+  const { columns } = useContext(TableContext)
+
+  return (
+    <StyledRow role='row' columns={columns}>
+      {children}
+    </StyledRow>
+  )
+}
+
+const Footer = ({ children }) => {
+  return (
+    <StyledFooter>
+      {children}
+    </StyledFooter>
+  )
+}
+
+Table.Header = Header
+Table.Body = Body
+Table.Row = Row
+Table.Footer = Footer
+
+export default Table

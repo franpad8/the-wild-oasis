@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 
+import React from 'react'
+
 const StyledSelect = styled.select`
   font-size: 1.4rem;
   padding: 0.8rem 1.2rem;
@@ -13,3 +15,13 @@ const StyledSelect = styled.select`
   font-weight: 500;
   box-shadow: var(--shadow-sm);
 `
+
+const Select = ({ options, value, ...props }) => {
+  return (
+    <StyledSelect value={value} {...props}>
+      {options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+    </StyledSelect>
+  )
+}
+
+export default Select

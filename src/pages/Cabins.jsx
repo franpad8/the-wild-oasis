@@ -1,23 +1,20 @@
-import { useState } from 'react'
 import CabinTable from '../features/cabins/CabinTable'
-import CreateCabinForm from '../features/cabins/CreateCabinForm'
-import Button from '../ui/Button'
 import Heading from '../ui/Heading'
 import Row from '../ui/Row'
+import AddCabin from '../features/cabins/AddCabin'
+import CabinTableOperations from '../features/cabins/CabinTableOperations'
 
 function Cabins () {
-  const [showNewCabinForm, setShowNewCabinForm] = useState(false)
-
   return (
     <>
       <Row type='horizontal'>
         <Heading as='h1'>All cabins</Heading>
+        <CabinTableOperations />
       </Row>
 
       <Row>
         <CabinTable />
-        <Button onClick={() => setShowNewCabinForm(!showNewCabinForm)}>Add New Cabin</Button>
-        {showNewCabinForm && <CreateCabinForm />}
+        <AddCabin />
       </Row>
     </>
   )
