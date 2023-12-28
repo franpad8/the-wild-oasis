@@ -1,5 +1,25 @@
+import { PAGE_SIZE } from '../utils/constants'
 import { getToday } from '../utils/helpers'
 import supabase from './supabase'
+
+export async function getBookings ({ filter, sort, page }) {
+  let query = supabase
+    .from('bookings')
+    .select('id, startDate, endDate, numNights, numGuests, totalPrice, status, ' +
+              'guests(fullName, email), cabins(name)', { count: 'exact' })
+
+  if (filter) query = query[filter.compareFn || 'eq'](filter.field, filter.value)
+  if (page !== undefined) query = query.range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
+  if (sort) query = query.order(sort.field, { ascending: sort.direction === 'asc' })
+
+  const { data, count, error } = await query
+  if (error) {
+    console.error(error)
+    throw new Error('Error retrieving bookings data')
+  }
+
+  return { data, count }
+}
 
 export async function getBooking (id) {
   const { data, error } = await supabase

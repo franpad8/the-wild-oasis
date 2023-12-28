@@ -131,7 +131,7 @@ function CreateCabinForm ({ cabinToEdit, handleClose }) {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variation='secondary' type='reset' disabled={isProcessing} onClick={() => handleClose?.()}>
+        <Button $variation='secondary' type='reset' disabled={isProcessing} onClick={() => handleClose?.()}>
           Cancel
         </Button>
         <Button disabled={isProcessing}>{isEditSession ? 'Edit cabin' : 'Create Cabin'}</Button>
