@@ -40,6 +40,7 @@ const Filter = ({ options, filterField }) => {
 
   function handleClick (chosenFilter) {
     searchParams.set(filterField, chosenFilter)
+    searchParams.delete('page')
     setSearchParams(searchParams)
   }
 

@@ -6,8 +6,15 @@ import Heading from '../../ui/Heading'
 import ButtonGroup from '../../ui/ButtonGroup'
 import Button from '../../ui/Button'
 import ButtonText from '../../ui/ButtonText'
+import Checkbox from '../../ui/Checkbox'
 
 import { useMoveBack } from '../../hooks/useMoveBack'
+import useBooking from '../bookings/useBooking'
+import Spinner from '../../ui/Spinner'
+import { useState } from 'react'
+import useCheckin from './useCheckin'
+import useSettings from '../settings/useSettings'
+import { formatCurrency } from '../../utils/helpers'
 
 const Box = styled.div`
   /* Box */
@@ -18,21 +25,34 @@ const Box = styled.div`
 `
 
 function CheckinBooking () {
+  const [approvedPayment, setApprovedPayment] = useState(false)
+  const [breakfastIncluded, setBreakfastIncluded] = useState(false)
+  const { isCheckingIn, checkin } = useCheckin()
   const moveBack = useMoveBack()
+  const { booking, isLoading } = useBooking()
+  const { breakfastPrice } = useSettings()
 
-  const booking = {}
+  if (isLoading) return <Spinner />
 
   const {
     id: bookingId,
-    guests,
+    // guests,
     totalPrice,
     numGuests,
     hasBreakfast,
     numNights
   } = booking
 
-  function handleCheckin () {}
+  const extrasPrice = breakfastPrice * numGuests * numNights
 
+  function handleCheckin () {
+    checkin({
+      bookingId,
+      hasBreakfast: breakfastIncluded,
+      totalPrice: totalPrice + (breakfastIncluded ? extrasPrice : 0),
+      extrasPrice: breakfastIncluded ? extrasPrice : 0
+    })
+  }
   return (
     <>
       <Row type='horizontal'>
@@ -42,12 +62,40 @@ function CheckinBooking () {
 
       <BookingDataBox booking={booking} />
 
-      <ButtonGroup>
-        <Button onClick={handleCheckin}>Check in booking #{bookingId}</Button>
-        <Button $variation='secondary' onClick={moveBack}>
-          Back
-        </Button>
-      </ButtonGroup>
+      {
+      !hasBreakfast &&
+        <Box>
+          <Checkbox
+            checked={breakfastIncluded}
+            onChange={() => { setBreakfastIncluded(included => !included) }}
+            disabled={breakfastIncluded}
+          >Want to include breakfast for an additional {formatCurrency(extrasPrice)}?
+          </Checkbox>
+        </Box>
+      }
+
+      <Row type='horizontal'>
+        <Box>
+          <Checkbox
+            checked={approvedPayment}
+            onChange={() => setApprovedPayment(approbed => !approbed)}
+            disabled={approvedPayment}
+          >Approve payment of {formatCurrency(totalPrice + (breakfastIncluded ? extrasPrice : 0))} {' '}
+            {breakfastIncluded ? `(${formatCurrency(totalPrice)} + ${formatCurrency(extrasPrice)})` : ''}
+          </Checkbox>
+        </Box>
+        <ButtonGroup>
+          <Button
+            onClick={handleCheckin}
+            disabled={!approvedPayment || isLoading || isCheckingIn}
+          >Check in booking #{bookingId}
+          </Button>
+          <Button $variation='secondary' onClick={moveBack}>
+            Back
+          </Button>
+        </ButtonGroup>
+      </Row>
+
     </>
   )
 }

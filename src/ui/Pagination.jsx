@@ -90,7 +90,7 @@ function Pagination ({ count }) {
         </PaginationButton>
         <PaginationButton
           onClick={() => onNextPage()}
-          disabled={(currentPage + 1) * PAGE_SIZE > count}
+          disabled={(currentPage + 1) * PAGE_SIZE >= count}
         >Next<HiChevronRight />
         </PaginationButton>
       </Buttons>
