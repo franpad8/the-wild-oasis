@@ -27,6 +27,7 @@ const Container = styled.div`
 
 const AppLayout = () => {
   return (
+
     <StyledAppLayout>
       <Header />
       <Sidebar />

@@ -28,11 +28,17 @@ const StyledFormRow = styled.div`
   }
 `
 
-const FormRow = ({ children, label }) => {
+const Error = styled.span`
+  font-size: 1.4rem;
+  color: var(--color-red-700);
+`
+
+const FormRow = ({ children, label, error }) => {
   return (
     <StyledFormRow>
-      {label ? <Label htmlFor={children.id}>{label}</Label> : null}
+      {label ? <Label htmlFor={children.props.id}>{label}</Label> : null}
       {children}
+      {error && <Error>{error}</Error>}
     </StyledFormRow>
   )
 }

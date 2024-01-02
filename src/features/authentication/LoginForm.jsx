@@ -1,41 +1,57 @@
-import { useState } from "react";
-import Button from "../../ui/Button";
-import Form from "../../ui/Form";
-import Input from "../../ui/Input";
-import FormRowVertical from "../../ui/FormRowVertical";
+import { useState } from 'react'
+import Button from '../../ui/Button'
+import Form from '../../ui/Form'
+import Input from '../../ui/Input'
+import FormRowVertical from '../../ui/FormRowVertical'
+import SpinnerMini from '../../ui/SpinnerMini'
+import useLogin from './useLogin'
+import { useNavigate } from 'react-router-dom'
 
-function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+function LoginForm () {
+  const [email, setEmail] = useState('test@email.com')
+  const [password, setPassword] = useState('pass1234')
+  const { isLoading, loginUser } = useLogin()
+  const navigate = useNavigate()
 
-  function handleSubmit() {}
+  function handleSubmit (e) {
+    e.preventDefault()
+    loginUser({ email, password }, {
+      onSuccess: () => {
+        navigate('/', { replace: true })
+      }
+    })
+  }
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FormRowVertical label="Email address">
+      <FormRowVertical label='Email address'>
         <Input
-          type="email"
-          id="email"
+          type='email'
+          id='email'
           // This makes this form better for password managers
-          autoComplete="username"
+          autoComplete='username'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={isLoading}
         />
       </FormRowVertical>
-      <FormRowVertical label="Password">
+      <FormRowVertical label='Password'>
         <Input
-          type="password"
-          id="password"
-          autoComplete="current-password"
+          type='password'
+          id='password'
+          autoComplete='current-password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={isLoading}
         />
       </FormRowVertical>
       <FormRowVertical>
-        <Button size="large">Login</Button>
+        <Button size='large' disabled={isLoading}>
+          {isLoading ? <SpinnerMini /> : 'Login'}
+        </Button>
       </FormRowVertical>
     </Form>
-  );
+  )
 }
 
-export default LoginForm;
+export default LoginForm
