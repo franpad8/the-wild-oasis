@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-function useClickOutside ({ handler }) {
+function useClickOutside ({ handler, listenCapturing = true }) {
   const ref = useRef()
 
   useEffect(() => {
@@ -8,10 +8,10 @@ function useClickOutside ({ handler }) {
       if (ref.current && !ref.current.contains(e.target)) handler()
     }
 
-    document.addEventListener('click', onClickHandler, true)
+    document.addEventListener('click', onClickHandler, listenCapturing)
 
-    return document.removeEventListener('click', onClickHandler)
-  }, [handler])
+    return document.removeEventListener('click', onClickHandler, listenCapturing)
+  }, [handler, listenCapturing])
 
   return ref
 }
